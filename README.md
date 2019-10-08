@@ -17,8 +17,9 @@ Aw, snap! We need to throw an EMB there also. But how da f' you are applying pre
  --- 
  
  ### Cough-cough... so why?
- Oh, yes.
- So basically, if you need to merge 2 ini in one - just give this tool a try.
+  Oh, yes.
+  So basically, if you need to merge 2 ini in one - just give this tool a try.
+
  ---
  
  ### Usage:
