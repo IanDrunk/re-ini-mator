@@ -1,4 +1,4 @@
-#**Re-ini-mator:** 
+ # **Re-ini-mator:** 
 Tool for easy .ini files merging
 
  ---
