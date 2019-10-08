@@ -1,19 +1,19 @@
 package com.taraskudelia;
 
-import com.taraskudelia.ini.IniFileParser;
 import com.taraskudelia.ini.IniFileWriter;
 import com.taraskudelia.ini.IniMerger;
-import com.taraskudelia.ini.IniModel;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
+import org.ini4j.Ini;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.WrongMethodTypeException;
 
 /**
  * @author Taras Kudelia
  * @since 07 Oct 2019
  */
+@Slf4j
 public class Reinimator {
 
     /* pattern for the printUsage function */
@@ -35,18 +35,17 @@ public class Reinimator {
             exitWithError(errorMessage);
         }
 
-        // Get input files and create file for the output.
-        final File inFile = new File(args[0]);
-        final File supFile = new File(args[1]);
+        // Define output file
         File outFile = new File(args[2]);
 
         // Parsing IniModels from the files
-        IniModel inModel = IniFileParser.parse(inFile);
-        IniModel supModel = IniFileParser.parse(supFile);
-
-        // Trying to apply merge
-        IniModel outModel = IniMerger.merge(inModel, supModel);
         try {
+            Ini inModel = new Ini(new File(args[0]));
+            Ini supModel = new Ini(new File(args[1]));
+
+            // TODO ====================================================================================================
+            // Trying to apply merge
+            Ini outModel = IniMerger.merge(inModel, supModel);
             IniFileWriter.saveModel(outModel, outFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,31 +66,29 @@ public class Reinimator {
      *          null - if all tests are passed.
      */
     private static String validateArgs(String[] args) {
+        // arg count
         if (args.length != 3) {
-            // arg count
-            return "wrong number of arguments";
+            return "Wrong number of arguments";
         }
+
         // Files check
-        try {
-            final String inFilePath = args[0];
-            final String supFileName = args[1];
-            final String outFileName = args[2];
+        final String inFilePath = args[0];
+        final String supFileName = args[1];
+        final String outFileName = args[2];
 
-            if (!isValidInputFile(inFilePath)) {
-                return "File " + inFilePath + " does not exists.";
-            } else if (!isValidInputFile(supFileName)) {
-                return "File " + supFileName + " does not exists.";
-            } else if (!isValidOutputFile(outFileName)) {
-                return "File " + outFileName + " already exists.";
-            }
+        if (!isValidInputFile(inFilePath)) {
+            return "File " + inFilePath + " does not exists.";
+        }
+        if (!isValidInputFile(supFileName)) {
+            return "File " + supFileName + " does not exists.";
+        }
+        if (!isValidOutputFile(outFileName)) {
+            return "File " + outFileName + " already exists.";
+        }
 
-            // File names collide
-            if (inFilePath.equals(supFileName) || inFilePath.equals(outFileName) || supFileName.equals(outFileName)) {
-                return "All .ini files must be different files.";
-            }
-        } catch (WrongMethodTypeException e) {
-            e.printStackTrace();
-            return e.getMessage();
+        // File names collide
+        if (inFilePath.equals(supFileName) || inFilePath.equals(outFileName) || supFileName.equals(outFileName)) {
+            return "All .ini files must be different files.";
         }
         return null;
     }

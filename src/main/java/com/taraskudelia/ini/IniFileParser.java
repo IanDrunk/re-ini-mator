@@ -1,6 +1,12 @@
 package com.taraskudelia.ini;
 
+import org.ini4j.Wini;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Taras Kudelia
@@ -8,8 +14,16 @@ import java.io.File;
  */
 public class IniFileParser {
 
-    public static IniModel parse(File iniFile) {
-        return null;
+    public static Map<File, Wini> parse(List<File> iniFiles) {
+        Map<File, Wini> result = new HashMap<>();
+        iniFiles.forEach(iniFile -> {
+            try {
+                result.put(iniFile, new Wini(iniFile));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return result;
     }
 
 }
