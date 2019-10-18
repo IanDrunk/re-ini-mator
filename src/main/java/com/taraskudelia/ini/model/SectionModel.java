@@ -1,220 +1,44 @@
 package com.taraskudelia.ini.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.ini4j.Profile;
-
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-@Getter
-@Setter
-public class SectionModel implements Profile.Section {
+public class SectionModel extends AbstractSectionModel {
 
-    private String name;
-    private Map<String, String> keyValueMap;
-
-    @Override public Profile.Section getChild(String s) { return null; }
-
-    @Override public Profile.Section getParent() { return null; }
-    @Override public String getSimpleName() { return null; }
-    @Override public Profile.Section addChild(String s) { return null; }
-    @Override public String[] childrenNames() { return new String[0]; }
-    @Override public Profile.Section lookup(String... strings) { return null; }
-    @Override
-    public void removeChild(String s) {
-
+    public SectionModel(String name) {
+        super(name);
     }
 
-    @Override
-    public <T> T getAll(Object o, Class<T> aClass) {
-        return null;
+    public SectionModel(String name, Map<String, String> keyValueMap) {
+        super(name, keyValueMap);
     }
 
-    @Override
-    public void add(String s, Object o) {
-
-    }
-
-    @Override
-    public void add(String s, Object o, int i) {
-
-    }
-
-    @Override
-    public <T> T as(Class<T> aClass) {
-        return null;
-    }
-
-    @Override
-    public <T> T as(Class<T> aClass, String s) {
-        return null;
-    }
-
-    @Override
-    public String fetch(Object o) {
-        return null;
-    }
-
-    @Override
-    public String fetch(Object o, String s) {
-        return null;
-    }
-
-    @Override
-    public String fetch(Object o, int i) {
-        return null;
-    }
-
-    @Override
-    public <T> T fetch(Object o, Class<T> aClass) {
-        return null;
-    }
-
-    @Override
-    public <T> T fetch(Object o, Class<T> aClass, T t) {
-        return null;
-    }
-
-    @Override
-    public <T> T fetch(Object o, int i, Class<T> aClass) {
-        return null;
-    }
-
-    @Override
-    public <T> T fetchAll(Object o, Class<T> aClass) {
-        return null;
-    }
-
-    @Override
-    public void from(Object o) {
-
-    }
-
-    @Override
-    public void from(Object o, String s) {
-
-    }
-
-    @Override
-    public String get(Object o, String s) {
-        return null;
-    }
-
-    @Override
-    public <T> T get(Object o, Class<T> aClass) {
-        return null;
-    }
-
-    @Override
-    public <T> T get(Object o, Class<T> aClass, T t) {
-        return null;
-    }
-
-    @Override
-    public <T> T get(Object o, int i, Class<T> aClass) {
-        return null;
-    }
-
-    @Override
-    public String put(String s, Object o) {
-        return null;
-    }
-
-    @Override
-    public String put(String s, Object o, int i) {
-        return null;
-    }
-
-    @Override
-    public void putAll(String s, Object o) {
-
-    }
-
-    @Override
-    public void to(Object o) {
-
-    }
-
-    @Override
-    public void to(Object o, String s) {
-
-    }
-
-    @Override
-    public String getComment(Object o) {
-        return null;
-    }
-
-    @Override
-    public String putComment(String s, String s2) {
-        return null;
-    }
-
-    @Override
-    public String removeComment(Object o) {
-        return null;
-    }
-
-    @Override
-    public List<String> getAll(Object o) {
-        return null;
-    }
-
-    @Override
-    public void add(String s, String s2) {
-
-    }
-
-    @Override
-    public void add(String s, String s2, int i) {
-
-    }
-
-    @Override
-    public String get(Object o, int i) {
-        return null;
-    }
-
-    @Override
-    public int length(Object o) {
-        return 0;
-    }
-
-    @Override
-    public String put(String s, String s2, int i) {
-        return null;
-    }
-
-    @Override
-    public List<String> putAll(String s, List<String> list) {
-        return null;
-    }
-
-    @Override
-    public String remove(Object o, int i) {
-        return null;
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
+    /**
+     * Looks for the entry with the given key and if present - overrides its value with a new one.
+     * @param key      - field key
+     * @param newValue - new field value
+     * @return true if update was performed; false - otherwise.
+     */
+    public boolean updateField(String key, String newValue) {
+        if (containsKey(key)) {
+            put(key, newValue);
+            return true;
+        }
         return false;
     }
-    @Override public boolean containsKey(Object key) { return false; }
-    @Override public boolean containsValue(Object value) { return false; }
-    @Override public String get(Object key) { return null; }
-    @Override public String put(String key, String value) { return null; }
-    @Override public String remove(Object key) { return null; }
-    @Override public void putAll(Map<? extends String, ? extends String> m) { }
-    @Override public void clear() { }
-    @Override public Set<String> keySet() { return null; }
-    @Override public Collection<String> values() { return null; }
-    @Override public Set<Entry<String, String>> entrySet() { return null; }
+
+    /**
+     * Merges two SectionModels. Takes primary key-value pairs from the primary SectionModel
+     * and updates overlapping pairs with the values from the override SectionModel, also adds pairs from the override
+     * model if they are not found in the primary model.
+     *
+     * @param primary  - SectionModel to take as a base
+     * @param override - SectionModel that would be used for the colliding value override and adding ones that missing.
+     * @return new merged SectionModel.
+     */
+    public static SectionModel merge(SectionModel primary, SectionModel override) {
+        Map<String, String> values = primary.getKeyValueMap();
+        override.getKeyValueMap().forEach(values::put);
+        return new SectionModel(primary.getName(), values);
+    }
+
 }
