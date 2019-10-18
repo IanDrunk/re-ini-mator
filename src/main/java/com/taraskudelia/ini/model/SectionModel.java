@@ -2,6 +2,10 @@ package com.taraskudelia.ini.model;
 
 import java.util.Map;
 
+/**
+ * @author Taras Kudelia
+ * @since 18 Oct 2019
+ */
 public class SectionModel extends AbstractSectionModel {
 
     public SectionModel(String name) {
@@ -13,32 +17,19 @@ public class SectionModel extends AbstractSectionModel {
     }
 
     /**
-     * Looks for the entry with the given key and if present - overrides its value with a new one.
-     * @param key      - field key
-     * @param newValue - new field value
-     * @return true if update was performed; false - otherwise.
-     */
-    public boolean updateField(String key, String newValue) {
-        if (containsKey(key)) {
-            put(key, newValue);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Merges two SectionModels. Takes primary key-value pairs from the primary SectionModel
      * and updates overlapping pairs with the values from the override SectionModel, also adds pairs from the override
      * model if they are not found in the primary model.
      *
-     * @param primary  - SectionModel to take as a base
-     * @param override - SectionModel that would be used for the colliding value override and adding ones that missing.
+     * @param main - SectionModel to take as a base
+     * @param supp - SectionModel that would be used for the colliding value override and adding ones that missing.
      * @return new merged SectionModel.
      */
-    public static SectionModel merge(SectionModel primary, SectionModel override) {
-        Map<String, String> values = primary.getKeyValueMap();
-        override.getKeyValueMap().forEach(values::put);
-        return new SectionModel(primary.getName(), values);
+    public static SectionModel merge(SectionModel main, SectionModel supp) {
+        Map<String, String> values = supp.getKeyValueMap();
+        // Here we add/override supp values with the main ones
+        main.getKeyValueMap().forEach(values::put);
+        return new SectionModel(main.getName(), values);
     }
 
 }

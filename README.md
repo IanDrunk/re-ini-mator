@@ -26,6 +26,8 @@ Aw, snap! We need to throw an EMB there also. But how da f' you are applying pre
  * todo 
  
  ### TODO:
- * todo
+ * cover with tests
+ * ini file saving
+ * some kind of ui _???_
  
  #### Feel free to contact me or fire-up a suggestion. 

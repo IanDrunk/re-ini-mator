@@ -4,7 +4,7 @@ import com.taraskudelia.ini.IniFileWriter;
 import com.taraskudelia.ini.IniMerger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
-import org.ini4j.Ini;
+import org.ini4j.Wini;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,12 +40,11 @@ public class Reinimator {
 
         // Parsing IniModels from the files
         try {
-            Ini inModel = new Ini(new File(args[0]));
-            Ini supModel = new Ini(new File(args[1]));
+            Wini baseModel = new Wini(new File(args[0]));
+            Wini suppModel = new Wini(new File(args[1]));
 
-            // TODO ====================================================================================================
-            // Trying to apply merge
-            Ini outModel = IniMerger.merge(inModel, supModel);
+            // Trying to apply merge and save the ini model
+            Wini outModel = IniMerger.merge(baseModel, suppModel);
             IniFileWriter.saveModel(outModel, outFile);
         } catch (IOException e) {
             e.printStackTrace();
