@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.ini4j.Wini;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * @author Taras Kudelia
@@ -82,7 +84,7 @@ public class Reinimator {
             return "File " + supFileName + " does not exists.";
         }
         if (!isValidOutputFile(outFileName)) {
-            return "File " + outFileName + " already exists.";
+            return "Override refused. Exit.";
         }
 
         // File names collide
@@ -112,7 +114,20 @@ public class Reinimator {
     private static boolean isValidOutputFile(final String pathToFile) {
         File iniFile = new File(pathToFile);
         File parentFile = iniFile.getParentFile();
-        return !iniFile.exists() && parentFile.isDirectory() && parentFile.canWrite() && parentFile.canRead();
+        boolean isAllGood = parentFile.isDirectory() && parentFile.canWrite() && parentFile.canRead();
+        if (iniFile.exists()) {
+            // Ask user if he want to override file
+            System.out.println("File " + pathToFile + " already exists.");
+            System.out.println("Do you want to override it? (yes/no)");
+            try {
+                final String response = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                return isAllGood && (response.contains("yes") || response.equalsIgnoreCase("y"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return isAllGood;
+
     }
 
     /**

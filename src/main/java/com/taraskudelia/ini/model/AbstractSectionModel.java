@@ -5,8 +5,8 @@ import lombok.Setter;
 import org.ini4j.Profile;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +23,7 @@ public abstract class AbstractSectionModel implements Profile.Section {
 
     public AbstractSectionModel(String name) {
         this.name = name;
-        this.keyValueMap = new HashMap<>();
+        this.keyValueMap = new LinkedHashMap<>();
     }
 
     public AbstractSectionModel(String name, Map<String, String> keyValueMap) {

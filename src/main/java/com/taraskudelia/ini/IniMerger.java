@@ -1,6 +1,7 @@
 package com.taraskudelia.ini;
 
 import com.taraskudelia.ini.model.SectionModel;
+import org.ini4j.BasicProfile;
 import org.ini4j.Wini;
 
 import java.util.HashSet;

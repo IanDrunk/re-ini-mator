@@ -18,9 +18,12 @@ public class IniFileWriter {
             if (!outFile.exists() && !outFile.createNewFile()) {
                 return;
             }
+            // Here we need to adapt
+            Wini ini = new Wini(outFile);
+            ini.getConfig().setStrictOperator(true);
+            outModel.values().forEach(section -> section.forEach((key, value) -> ini.put(section.getName(), key, value)));
             // Write to the file
-            outModel.setFile(outFile);
-            outModel.store();
+            ini.store();
         } catch (InvalidFileFormatException e) {
             System.out.println("Invalid file format.");
         } catch (IOException e) {
