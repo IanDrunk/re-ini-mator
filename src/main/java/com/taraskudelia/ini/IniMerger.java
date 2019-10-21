@@ -1,7 +1,6 @@
 package com.taraskudelia.ini;
 
 import com.taraskudelia.ini.model.SectionModel;
-import org.ini4j.BasicProfile;
 import org.ini4j.Wini;
 
 import java.util.HashSet;
@@ -70,8 +69,7 @@ public class IniMerger {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, value) -> value)));
         SectionModel suppSection = new SectionModel(sectionName, supp.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, value) -> value)));
-        SectionModel merge = SectionModel.merge(mainSection, suppSection);
-        return merge;
+        return SectionModel.merge(mainSection, suppSection);
     }
 
 }
