@@ -1,6 +1,6 @@
 package com.taraskudelia.ini;
 
-import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Wini;
 
 import java.io.File;
@@ -12,8 +12,23 @@ import java.io.IOException;
  */
 public class IniFileWriter {
 
-    public static void saveModel(Ini outModel, File outFile) throws IOException {
-        // TODO
+    public static void saveModel(Wini outModel, File outFile) {
+        try {
+            // Create file for writing
+            if (!outFile.exists() && !outFile.createNewFile()) {
+                return;
+            }
+            // Here we need to adapt
+            Wini ini = new Wini(outFile);
+            ini.getConfig().setStrictOperator(true);
+            outModel.values().forEach(section -> section.forEach((key, value) -> ini.put(section.getName(), key, value)));
+            // Write to the file
+            ini.store();
+        } catch (InvalidFileFormatException e) {
+            System.out.println("Invalid file format.");
+        } catch (IOException e) {
+            System.out.println("Problem reading file.");
+        }
     }
 
 }

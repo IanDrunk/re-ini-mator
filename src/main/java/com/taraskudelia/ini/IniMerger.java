@@ -1,12 +1,13 @@
 package com.taraskudelia.ini;
 
-import org.ini4j.Ini;
-import org.ini4j.Profile;
+import com.taraskudelia.ini.model.SectionModel;
 import org.ini4j.Wini;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Taras Kudelia
@@ -14,37 +15,61 @@ import java.util.Set;
  */
 public class IniMerger {
 
-    public static Wini merge(Ini baseModel, Ini supModel) {
+    /**
+     * Merging two models.
+     *
+     * @implNote Here we are assuming that the mainModel is top priority and in case of the conflicting fields
+     * base field will be accepted and the supplementary one will be dropped.
+     *
+     * @param mainModel - model of the main Ini file
+     * @param suppModel - model of the supplementary Ini file
+     * @return Wini model - result of merging two models.
+     */
+    public static Wini merge(Wini mainModel, Wini suppModel) {
         Wini result = new Wini();
 
         // Get all section names
-        Set<String> baseSectionNames = baseModel.keySet();
-        Set<String> supSectionNames = supModel.keySet();
+        Set<String> mainSectionNames = mainModel.keySet();
+        Set<String> suppSectionNames = suppModel.keySet();
+        Set<String> allSectionNames = new HashSet<>(mainSectionNames);
+        allSectionNames.addAll(suppSectionNames);
 
-        // Add all sections from the base model to the result
-        baseSectionNames.forEach(name -> result.put(name, baseModel.get(name)));
+        // Sort what need to be merged
+        List<String> sorterNames = allSectionNames.stream().sorted().collect(Collectors.toList());
+        sorterNames.forEach(sectionName -> {
+            // Check name presence in models
+            boolean isInMain = mainSectionNames.contains(sectionName);
+            boolean isInSupp = suppSectionNames.contains(sectionName);
 
-        // Define unique sections from the supplementary model and put them to the result model
-        // If we found repeating Section - save is for the future resolution
-        Set<String> conflictingSections = new HashSet<>();
-        supSectionNames.forEach(name -> {
-            if (!baseSectionNames.contains(name)) {
-                result.put(name, baseModel.get(name));
-            } else {
-                conflictingSections.add(name);
+            if (!isInMain && !isInSupp) {
+                // Something gone wrong
+                return;
             }
+
+            // If section is unique across both models - add to the result.
+            // Else - we apply merge and add the resulting section.
+            Wini.Section resultSection = isInMain && isInSupp
+                    ? mergeSections(mainModel.get(sectionName), suppModel.get(sectionName)) // section collision
+                    : (isInMain ? mainModel : suppModel).get(sectionName);
+            result.put(sectionName, resultSection);
         });
-
-        // TODO
-        //  - merge sections
-        //  - check for key-values in sections
-        //  - merge
-
         return result;
     }
 
-    private static void addSectionToIni(Ini.Section section, Ini iniModel) {
-//        iniModel.add();
+    /**
+     * Merges two ini section models (applying )
+     *
+     * @param main - main ini section model
+     * @param supp - supplementary ini section model
+     * @return resulting merged ini section model
+     */
+    private static SectionModel mergeSections(Wini.Section main, Wini.Section supp) {
+        String sectionName = main.getName();
+        SectionModel mainSection = new SectionModel(sectionName, main.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, value) -> value)));
+        SectionModel suppSection = new SectionModel(sectionName, supp.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, value) -> value)));
+        return SectionModel.merge(mainSection, suppSection);
     }
 
 }
