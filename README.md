@@ -23,11 +23,12 @@ Aw, snap! We need to throw an EMB there also. But how da f' you are applying pre
  ---
  
  ### Usage:
- * todo 
+ ``java -jar re-ini-maror.jar [path_to_base_ini_file] [path_to_supplementary_ini_file] [path_to_the_result_ini_file]``
  
  ### TODO:
+ * ~~ini file saving~~
  * cover with tests
- * ini file saving
- * some kind of ui _???_
+ * some kind of **UI**
+ * try to not mess up entries order
  
  #### Feel free to contact me or fire-up a suggestion. 
