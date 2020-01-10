@@ -1,4 +1,4 @@
-package com.taraskudelia.ini.model;
+package com.taraskudelia.reinimator.ini.model;
 
 import lombok.Getter;
 import lombok.Setter;

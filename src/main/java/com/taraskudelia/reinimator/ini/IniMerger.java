@@ -1,6 +1,6 @@
-package com.taraskudelia.ini;
+package com.taraskudelia.reinimator.ini;
 
-import com.taraskudelia.ini.model.SectionModel;
+import com.taraskudelia.reinimator.ini.model.SectionModel;
 import org.ini4j.Wini;
 
 import java.util.HashSet;

@@ -1,10 +1,10 @@
-package com.taraskudelia;
+package com.taraskudelia.reinimator;
 
-import com.taraskudelia.ini.IniFileWriter;
-import com.taraskudelia.ini.IniMerger;
+import com.taraskudelia.reinimator.view.scene.MenuSceneBuilder;
+import javafx.application.Application;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
-import org.ini4j.Wini;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,11 +16,17 @@ import java.io.InputStreamReader;
  * @since 07 Oct 2019
  */
 @Slf4j
-public class Reinimator {
+public class Reinimator extends Application {
 
     /* pattern for the printUsage function */
     private final static String USAGE_PATTERN = "java -jar %s.jar %s.ini %s.ini";
     private final static String SUCCESS_PATTERN = "Done! File %s was created at %s.";
+
+    @Override
+    public void start(Stage stage) {
+        stage.setScene(MenuSceneBuilder.getScene());
+        stage.show();
+    }
 
     /**
      * Entry point.
@@ -31,33 +37,34 @@ public class Reinimator {
      * @implNote recurring or existing file names are forbidden.
      */
     public static void main(String[] args) {
-        // If errors found - exit with error + print usage
-        final String errorMessage = validateArgs(args);
-        if (errorMessage != null) {
-            exitWithError(errorMessage);
-        }
-
-        // Define output file
-        File outFile = new File(args[2]);
-
-        // Parsing IniModels from the files
-        try {
-            Wini baseModel = new Wini(new File(args[0]));
-            Wini suppModel = new Wini(new File(args[1]));
-
-            // Trying to apply merge and save the ini model
-            Wini outModel = IniMerger.merge(baseModel, suppModel);
-            IniFileWriter.saveModel(outModel, outFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            exitWithError(e.getMessage());
-        }
-
-        // Done. Print message and exit like a good citizen
-        final String outFilePath = outFile.getAbsolutePath();
-        final String outFileName = outFile.getName();
-        System.out.println(StringFormatterMessageFactory.INSTANCE.newMessage(SUCCESS_PATTERN, outFileName, outFilePath));
-        System.exit(0);
+        launch();
+//        // If errors found - exit with error + print usage
+//        final String errorMessage = validateArgs(args);
+//        if (errorMessage != null) {
+//            exitWithError(errorMessage);
+//        }
+//
+//        // Define output file
+//        File outFile = new File(args[2]);
+//
+//        // Parsing IniModels from the files
+//        try {
+//            Wini baseModel = new Wini(new File(args[0]));
+//            Wini suppModel = new Wini(new File(args[1]));
+//
+//            // Trying to apply merge and save the ini model
+//            Wini outModel = IniMerger.merge(baseModel, suppModel);
+//            IniFileWriter.saveModel(outModel, outFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            exitWithError(e.getMessage());
+//        }
+//
+//        // Done. Print message and exit like a good citizen
+//        final String outFilePath = outFile.getAbsolutePath();
+//        final String outFileName = outFile.getName();
+//        System.out.println(StringFormatterMessageFactory.INSTANCE.newMessage(SUCCESS_PATTERN, outFileName, outFilePath));
+//        System.exit(0);
     }
 
     /**
@@ -147,5 +154,4 @@ public class Reinimator {
         System.out.println(StringFormatterMessageFactory.INSTANCE.newMessage(USAGE_PATTERN, "path_to_the_base",
                 "path_to_the_supplementary", "name_of_the_result"));
     }
-
 }

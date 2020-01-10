@@ -1,4 +1,4 @@
-package com.taraskudelia.ini;
+package com.taraskudelia.reinimator.ini;
 
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Wini;
