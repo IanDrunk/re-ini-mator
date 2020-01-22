@@ -1,157 +1,162 @@
 package com.taraskudelia.reinimator;
 
-import com.taraskudelia.reinimator.view.scene.MenuSceneBuilder;
+import com.taraskudelia.reinimator.view.dialog.FileChooserHelper;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.message.StringFormatterMessageFactory;
+import javafx.stage.Window;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * @author Taras Kudelia
  * @since 07 Oct 2019
  */
-@Slf4j
 public class Reinimator extends Application {
 
-    /* pattern for the printUsage function */
-    private final static String USAGE_PATTERN = "java -jar %s.jar %s.ini %s.ini";
-    private final static String SUCCESS_PATTERN = "Done! File %s was created at %s.";
+    private static final int PADDING = 20;
+    private static final int H_GAP = 25;
+    private static final int V_GAP = 15;
 
-    @Override
-    public void start(Stage stage) {
-        stage.setScene(MenuSceneBuilder.getScene());
-        stage.show();
-    }
+    private static final String MAIN_INI_DESCRIPTION = "Choose path to the MAIN ini file";
+    private static final String SUPP_INI_DESCRIPTION = "Choose path to the SECONDARY ini file:";
+    private static final String NO_FILE_SELECTED = "NO FILE SELECTED";
+    private static final String OPEN = "Open";
+    private static final String MERGE = "Merge";
+
+    private static final String[] FILE_EXTENSIONS = new String[] {
+            ".ini", ".txt"
+    };
+
+    /* target files */
+    private static Label mainFilePathLabel = null;
+    private static Label suppFilePathLabel = null;
+    private static Button mergeBtn = null;
+    private static TextField labelOutName = null;
 
     /**
      * Entry point.
      * @param args - command-line arguments
-     *               [0] base ini file
-     *               [1] supplementary ini file
-     *               [2] name of the result .ini file
-     * @implNote recurring or existing file names are forbidden.
      */
     public static void main(String[] args) {
         launch();
-//        // If errors found - exit with error + print usage
-//        final String errorMessage = validateArgs(args);
-//        if (errorMessage != null) {
-//            exitWithError(errorMessage);
-//        }
-//
-//        // Define output file
-//        File outFile = new File(args[2]);
-//
-//        // Parsing IniModels from the files
-//        try {
-//            Wini baseModel = new Wini(new File(args[0]));
-//            Wini suppModel = new Wini(new File(args[1]));
-//
-//            // Trying to apply merge and save the ini model
-//            Wini outModel = IniMerger.merge(baseModel, suppModel);
-//            IniFileWriter.saveModel(outModel, outFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            exitWithError(e.getMessage());
-//        }
-//
-//        // Done. Print message and exit like a good citizen
-//        final String outFilePath = outFile.getAbsolutePath();
-//        final String outFileName = outFile.getName();
-//        System.out.println(StringFormatterMessageFactory.INSTANCE.newMessage(SUCCESS_PATTERN, outFileName, outFilePath));
-//        System.exit(0);
+    }
+
+    @Override
+    public void start(Stage stage) {
+        stage.setScene(getScene(stage));
+        stage.show();
     }
 
     /**
-     * Searches for the obvious errors in the command-line arguments.
-     * @param args - command-line arguments.
-     * @return error message String with the error description if spotted;
-     *          null - if all tests are passed.
+     * TODO
+     * @param stage
+     * @return
      */
-    private static String validateArgs(String[] args) {
-        // arg count
-        if (args.length != 3) {
-            return "Wrong number of arguments";
-        }
+    private static Scene getScene(Stage stage) {
+        // Set up base GridPane
+        GridPane root = new GridPane();
+        root.setPadding(new Insets(PADDING));
+        root.setHgap(H_GAP);
+        root.setVgap(V_GAP);
 
-        // Files check
-        final String inFilePath = args[0];
-        final String supFileName = args[1];
-        final String outFileName = args[2];
+        createMainFileRow(root, stage);
+        createSuppFileRow(root, stage);
+        createOutputFileRow(root, stage);
 
-        if (!isValidInputFile(inFilePath)) {
-            return "File " + inFilePath + " does not exists.";
-        }
-        if (!isValidInputFile(supFileName)) {
-            return "File " + supFileName + " does not exists.";
-        }
-        if (!isValidOutputFile(outFileName)) {
-            return "Override refused. Exit.";
-        }
-
-        // File names collide
-        if (inFilePath.equals(supFileName) || inFilePath.equals(outFileName) || supFileName.equals(outFileName)) {
-            return "All .ini files must be different files.";
-        }
-        return null;
+        return new Scene(root, 640, 480);
     }
 
     /**
-     * Check if given path is valid .ini file.
-     * @param pathToFile - absolute path to the .ini file.
-     * @return true if all criteria was met; false - otherwise.
+     * TODO
+     * @param pane
+     * @param stage
      */
-    private static boolean isValidInputFile(final String pathToFile) {
-        File iniFile = new File(pathToFile);
-        final String fileName = iniFile.getName();
-        return iniFile.exists() && iniFile.isFile() && iniFile.canRead()
-                && fileName.substring(fileName.lastIndexOf(".")).equalsIgnoreCase(".ini");
+    private static void createMainFileRow(final GridPane pane, final Stage stage) {
+        final int row = 0;
+
+        final Label labelMainIni = new Label(MAIN_INI_DESCRIPTION);
+        pane.add(labelMainIni, 0, row, 2, 1);
+        final Button openMainBtn = new Button(OPEN);
+        pane.add(openMainBtn, 2, row, 1, 1);
+        mainFilePathLabel = new Label(NO_FILE_SELECTED);
+        pane.add(mainFilePathLabel, 3, row, 2, 1);
+        openMainBtn.setOnAction(getOpenIniListener(stage, MAIN_INI_DESCRIPTION, mainFilePathLabel));
     }
 
     /**
-     * Check if given path can be used to create an output .ini file.
-     * @param pathToFile - absolute path to the .ini file.
-     * @return true if all criteria was met; false - otherwise.
+     * TODO
+     * @param pane
+     * @param stage
      */
-    private static boolean isValidOutputFile(final String pathToFile) {
-        File iniFile = new File(pathToFile);
-        File parentFile = iniFile.getParentFile();
-        boolean isAllGood = parentFile.isDirectory() && parentFile.canWrite() && parentFile.canRead();
-        if (iniFile.exists()) {
-            // Ask user if he want to override file
-            System.out.println("File " + pathToFile + " already exists.");
-            System.out.println("Do you want to override it? (yes/no)");
-            try {
-                final String response = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                return isAllGood && (response.contains("yes") || response.equalsIgnoreCase("y"));
-            } catch (IOException e) {
-                e.printStackTrace();
+    private static void createSuppFileRow(final GridPane pane, final Stage stage) {
+        final int row = 1;
+
+        final Label labelSuppIni = new Label(SUPP_INI_DESCRIPTION);
+        pane.add(labelSuppIni, 0, row, 2, 1);
+        final Button openSuppBtn = new Button(OPEN);
+        pane.add(openSuppBtn, 2, row, 1, 1);
+        suppFilePathLabel = new Label(NO_FILE_SELECTED);
+        pane.add(suppFilePathLabel, 3, row, 2, 1);
+        openSuppBtn.setOnAction(getOpenIniListener(stage, SUPP_INI_DESCRIPTION, suppFilePathLabel));
+    }
+
+    /**
+     * TODO
+     * @param pane
+     * @param stage
+     */
+    private static void createOutputFileRow(final GridPane pane, final Stage stage) {
+        final int row = 2;
+
+        labelOutName = new TextField();
+        labelOutName.setPromptText("Enter resulting ini file name");
+        pane.add(labelOutName, 0, row,2,1);
+        mergeBtn = new Button(MERGE);
+        pane.add(mergeBtn, 2, row, 1, 1);
+        mergeBtn.setOnAction(event ->
+                System.out.println("TODO")// TODO: hook up merge
+        );
+    }
+
+    /**
+     * TODO
+     * @param parentScene
+     * @param description
+     * @param textIndicator
+     * @return
+     */
+    private static EventHandler<ActionEvent> getOpenIniListener(Window parentScene, final String description, Label textIndicator) {
+        return event -> {
+            File choice = FileChooserHelper.getFile(parentScene, description, FILE_EXTENSIONS);
+            if (choice != null && textIndicator != null) {
+                textIndicator.setUserData(choice);
+                textIndicator.setText(choice.getName());
             }
-        }
-        return isAllGood;
-
+            updateMergeButton();
+        };
     }
 
-    /**
-     * Prints error message with usage info to the console and shuts down the application.
-     * @param message - error message to be printed.
-     */
-    private static void exitWithError(final String message) {
-        System.out.println(message);
-        printUsage();
-        System.exit(1);
-    }
 
     /**
-     * Prints usage for this tool in the console.
+     * Updates 'Merge' button availability status based on the validity of the input files
      */
-    private static void printUsage() {
-        System.out.println(StringFormatterMessageFactory.INSTANCE.newMessage(USAGE_PATTERN, "path_to_the_base",
-                "path_to_the_supplementary", "name_of_the_result"));
+    private static void updateMergeButton() {
+        boolean isValid = isValidFile(mainFilePathLabel) && isValidFile(suppFilePathLabel) && isValidFile(labelOutName);
+        mergeBtn.setDisable(!isValid);
     }
+
+    private static boolean isValidFile(Control control) {
+        //TODO
+        return false;
+    }
+
 }

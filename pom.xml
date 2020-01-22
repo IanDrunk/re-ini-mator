@@ -17,7 +17,7 @@
 	<description>Automated merge tool for the .ini files</description>
 
 	<properties>
-		<java.version>13</java.version>
+		<java.version>11</java.version>
 	</properties>
 
 	<dependencies>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>13</version>
+			<version>11</version>
 		</dependency>
 	</dependencies>
 

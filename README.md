@@ -9,7 +9,7 @@ Now you can save up for a new PC and, maybe after half a year, buy one! **Wow, A
 \
 Yeah, nothing gonna stop you on your crazy quest to play every last video game that you've craved for the last 7 years of adulthood! \
 So you've just finished Nightmare run of the **Doom 2016** :feelsgood: and now wondering what to play next? :milky_way: \
-No worries, 'ma man! Just re-install **Skyrim**but with a ton of mods! :+1: Just like in good 'ol days. \
+No worries, 'ma man! Just re-install **Skyrim** but with a ton of mods! :+1: Just like in good 'ol days. \
 Sure, now you can pimp it a notch with all those GRAPHICAL mods! \
 \
 Aw, snap! We need to throw an EMB there also. But how da f' you are applying presets?... :scroll:
@@ -22,7 +22,7 @@ Aw, snap! We need to throw an EMB there also. But how da f' you are applying pre
 
  ---
  
- ### Usage:
+ ### Usage CLI:
  ``java -jar re-ini-maror.jar [path_to_base_ini_file] [path_to_supplementary_ini_file] [path_to_the_result_ini_file]``
  
  ### TODO:
