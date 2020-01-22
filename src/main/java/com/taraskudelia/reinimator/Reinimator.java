@@ -185,7 +185,7 @@ public class Reinimator extends Application {
      * @return true if userData of the given control is an non-existing file that can be created.
      */
     private static boolean isValidOutFile(TextField labelOut) {
-        // TODO ss
+        // TODO
         return false;
     }
 
